@@ -36,17 +36,12 @@ void setup() {
   pinMode(ledState, INPUT);
   
   //initialize the connections
-  Serial.begin(115200);
-  Serial1.begin(115200);
+  Serial.begin(9600);
+  Serial1.begin(9600);
   WiFi.init(&Serial1);
 
   // attempt to connect to WiFi network
-  while ( status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to WPA SSID: ");
-    Serial.println(ssid);
-    // Connect to WPA/WPA2 network
-    status = WiFi.begin(ssid, pwd);
-  }
+  connect_to_wifi();
 
   // connected
   printWifiStatus();
@@ -56,6 +51,10 @@ void setup() {
 }
 
 void loop() {
+
+  // Maintain the network connection
+  connect_to_wifi();
+  
   if(millis() - t > 50){
     // read the state of the button:
     buttonState = digitalRead(buttonPin);
@@ -90,8 +89,17 @@ void loop() {
   }
 }
 
-void printWifiStatus()
-{
+void connect_to_wifi() {
+  // create of check the connection to the wifi network
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print("Attempting to connect to WPA SSID: ");
+    Serial.println(ssid);
+    // Connect to WPA/WPA2 network
+    status = WiFi.begin(ssid, pwd);
+  }
+}
+
+void printWifiStatus() {
   // print the SSID of the network you're attached to
   Serial.print("SSID: ");
   Serial.println(WiFi.SSID());
